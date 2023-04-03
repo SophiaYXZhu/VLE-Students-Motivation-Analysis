@@ -1,0 +1,432 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Calculator</title>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+    .img-container {
+        text-align: center;
+        display: block;
+    }
+
+    /* body {
+        min-height: 100vh;
+        padding: 0 10vh;
+        margin: 0;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    } */
+
+    input[type=range] {
+        -webkit-appearance: none;
+        margin: 20px 0;
+        width: 100%;
+    }
+
+    input[type=range]:focus {
+        outline: none;
+    }
+
+    input[type=range]::-webkit-slider-runnable-track {
+        width: 100%;
+        height: 4px;
+        cursor: pointer;
+        animate: 0.2s;
+        background: #03a9f4;
+        border-radius: 25px;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+        height: 20px;
+        width: 20px;
+        border-radius: 50%;
+        background: #fff;
+        box-shadow: 0 0 4px 0 rgba(0, 0, 0, 1);
+        cursor: pointer;
+        -webkit-appearance: none;
+        margin-top: -8px;
+    }
+
+    input[type=range]:focus::-webkit-slider-runnable-track {
+        background: #03a9f4;
+    }
+
+    .range-wrap {
+        width: 500px;
+        position: relative;
+    }
+
+    .range-value {
+        position: absolute;
+        top: -3%;
+    }
+
+    .range-value span {
+        width: 30px;
+        height: 24px;
+        line-height: 24px;
+        text-align: center;
+        background: #03a9f4;
+        color: #fff;
+        font-size: 12px;
+        display: block;
+        position: absolute;
+        left: 50%;
+        transform: translate(-50%, 0);
+        border-radius: 6px;
+    }
+
+    .range-value span:before {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 0;
+        border-top: 10px solid #03a9f4;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        margin-top: -1px;
+    }
+</style>
+
+
+{% endblock %}
+
+{% block body %}
+<h1>Survey</h1>
+<div>
+    <form id="survey" action="/survey" method="POST">
+        <div class="form-group">
+            <ol style="list-style: decimal inside;">
+                <li><label for="decimals" class="col-sm-2 text-nowrap">What is your age</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" name="age" id="age">
+                    </div>
+                </li>
+                <li><label for="decimals" class="col-sm-2 text-nowrap">What is the highest level of education you have
+                        completed?</label>
+                    <div class="col-sm-10">
+                        <select class="form-select form-select-sm" name="education_level">
+                            <option value="High School" selected>High school</option>
+                            <option value="College">College</option>
+                            <option value="Associate degree">Associate degree</option>
+                            <option value="Bachelors degree">Bachelors degree</option>
+                            <option value="Masters degree">Masters degree</option>
+                            <option value="Doctorate">Doctorate</option>
+                        </select>
+                    </div>
+                </li>
+                <li><label for="decimals" class="col-sm-2 text-nowrap">What percentile of score out of 100 are you in
+                        your academic setting?</label>
+                    <div class="col-sm-10">
+                        <select class="form-select form-select-sm" name="academic_score">
+                            <option value="Top 0-20%">Top 0-20%</option>
+                            <option value="Top 20-40%">Top 20-40%</option>
+                            <option value="Top 40-60%">Top 40-60%</option>
+                            <option value="Top 60-80%">Top 60-80%</option>
+                            <option value="Top 80-100%" selected>Top 80-100%</option>
+                        </select>
+                    </div>
+                </li>
+                <li><label for="decimals" class="col-sm-2 text-nowrap">What assessment type are you taking in this
+                        virtual learning environment / online course?</label>
+                    <div class="col-sm-10">
+                        <select class="form-select form-select-sm" name="assessment_type">
+                            <option value="CMA" selected>Computer-Marked Assessment (CMA)
+                            </option>
+                            <option value="TMA">Teacher-Marked Assessment (TMA)</option>
+                        </select>
+                    </div>
+                </li>
+                <li><label for="decimals" class="col-sm-2 text-nowrap">On average, how many times do you interact with
+                        the course interface / website per day?</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" name="interact_times" id="interact_times">
+                    </div>
+                </li>
+
+                <li><label for="decimals" class="col-sm-2 text-nowrap">On a scale of 1 to 10, how happy do you consider
+                        yourself to be?</label>
+                    <div class="range-wrap">
+                        <br />
+                        <label class="range-value" id="happy_index_display" name="happy_index_display"></label>
+                        <input id="happy_index" name="happy_index" type="range" min="1" max="10" value="6" step="1">
+                    </div>
+                </li>
+                <li><label for="decimals" class="col-sm-2 text-nowrap">On a scale of 1 to 10, how often do you feel
+                        anxious or stressful?</label>
+                    <div class="range-wrap">
+                        <br />
+                        <label class="range-value" id="stress_index_display" name="stress_index_display"></label>
+                        <input id="stress_index" name="stress_index" type="range" min="1" max="10" value="6" step="1">
+                    </div>
+                    <!-- <div class="col-sm-10">
+                        <input type="text" class="form-control" name="stress_index" id="stress_index">
+                    </div> -->
+                </li>
+                <li><label for="decimals" class="col-sm-2 text-nowrap">How often do you feel lonely?</label>
+                    <div class="col-sm-10">
+                        <select class="form-select form-select-sm" name="lonely_status">
+                            <option value="Always" selected>Always</option>
+                            <option value="Very often">Very often</option>
+                            <option value="Sometimes">Sometimes</option>
+                            <option value="Rarely">Rarely</option>
+                            <option value="Never">Never</option>
+                        </select>
+                    </div>
+                </li>
+                <li><label for="decimals" class="col-sm-2 text-nowrap">How often do you feel depressed?</label>
+                    <div class="col-sm-10">
+                        <select class="form-select form-select-sm" name="depressed_status">
+                            <option value="Always" selected>Always</option>
+                            <option value="Very often">Very often</option>
+                            <option value="Sometimes">Sometimes</option>
+                            <option value="Rarely">Rarely</option>
+                            <option value="Never">Never</option>
+                        </select>
+                    </div>
+                </li>
+                <li><label for="decimals" class="col-sm-2 text-nowrap">Please rate your level of agreement for the
+                        following statement from 1 to 10:</label>
+                    <div class="col-sm-10">
+                        <label for="text" class="col-sm-2 text-nowrap">I constantly receive compliments from
+                            others:</label>
+                        <div class="range-wrap">
+                            <br />
+                            <label class="range-value" id="compliments_index_display"
+                                name="compliments_index_display"></label>
+                            <input id="compliments_index" name="compliments_index" type="range" min="1" max="10"
+                                value="6" step="1">
+                        </div>
+                        <!-- <input id="compliments_index" type="range" class="form-range" min="1" max="10" step="1"
+                            onchange="this.nextElementSibling.value = this.value" />
+                        <output>5</output> -->
+                    </div>
+                    <div class="col-sm-10">
+                        <label for="text" class="col-sm-2 text-nowrap">Currently, I don’t need to worry about the
+                            finances in my life:</label>
+                        <div class="range-wrap">
+                            <br />
+                            <label class="range-value" id="finance_index_display" name="finance_index_display"></label>
+                            <input id="finance_index" name="finance_index" type="range" min="1" max="10" value="6"
+                                step="1">
+                        </div>
+                        <!-- <input id="finance_index" type="range" class="form-range" value="5" min="1" max="10" step="1" /> -->
+                    </div>
+                    <div class="col-sm-10">
+                        <label for="text" class="col-sm-2 text-nowrap">I am satisfied with my personal life and
+                            hobbies:</label>
+                        <div class="range-wrap">
+                            <br />
+                            <label class="range-value" id="hobbies_index_display" name="hobbies_index_display"></label>
+                            <input id="hobbies_index" name="hobbies_index" type="range" min="1" max="10" value="6"
+                                step="1">
+                        </div>
+                        <!-- <input id="hobbies_index" type="range" class="form-range" value="5" min="1" max="10" step="1" /> -->
+                    </div>
+                    <div class="col-sm-10">
+                        <label for="text" class="col-sm-2 text-nowrap">I am content with the social relationships in my
+                            life:</label>
+                        <div class="range-wrap">
+                            <br />
+                            <label class="range-value" id="social_index_display" name="social_index_display"></label>
+                            <input id="social_index" name="social_index" type="range" min="1" max="10" value="6"
+                                step="1">
+                        </div>
+                        <!-- <input id="social_index" type="range" class="form-range" value="5" min="1" max="10" step="1" /> -->
+                    </div>
+                    <div class="col-sm-10">
+                        <label for="text" class="col-sm-2 text-nowrap">I am content with my academic
+                            life/performance:</label>
+                        <div class="range-wrap">
+                            <br />
+                            <label class="range-value" id="academic_index_display"
+                                name="academic_index_display"></label>
+                            <input id="academic_index" name="academic_index" type="range" min="1" max="10" value="6"
+                                step="1">
+                        </div>
+                    </div>
+                    <div class="col-sm-10">
+                        <label for="text" class="col-sm-2 text-nowrap">I procrastinate very often:</label>
+                        <div class="range-wrap">
+                            <br />
+                            <label class="range-value" id="procrastinate_index_display"
+                                name="procrastinate_index_display"></label>
+                            <input id="procrastinate_index" name="procrastinate_index" type="range" min="1" max="10"
+                                value="6" step="1">
+                        </div>
+                    </div>
+                    <div class="col-sm-10">
+                        <label for="text" class="col-sm-2 text-nowrap">Compared to your peers or friends, you consider yourself happier than most of them:</label>
+                        <div class="range-wrap">
+                            <br />
+                            <label class="range-value" id="comparison_index_display"
+                                name="comparison_index_display"></label>
+                            <input id="comparison_index" name="comparison_index" type="range" min="1" max="10"
+                                value="6" step="1">
+                        </div>
+                    </div>
+                </li>
+        </div>
+        </ol>
+
+
+        <input type="submit" name="submit" id="submit" value="Submit" />
+
+    </form>
+</div>
+{% if result and result.message %}
+<p></p>
+<p></p>
+<p></p>
+<br>
+<br>
+<br>
+<div>
+    <h2>ERROR: {{ result.message}}</h2>
+</div>
+
+{% elif result and result.result %}
+<p>
+<div>
+    <h2 align="center">Result and Advice</h2>
+    <hr>
+    <p></p>
+    <div>{{ result.result }}</div>
+    {% endif %}
+
+    <script>
+        const
+            range = document.getElementById('happy_index'),
+            rangeV = document.getElementById('happy_index_display');
+        setValue = () => {
+            const
+                newValue = Number((range.value - range.min) * 100 / (range.max - range.min)),
+                newPosition = 10 - (newValue * 0.2);
+            rangeV.innerHTML = `<span>${range.value}</span>`;
+            rangeV.style.left = `calc(${newValue}% + (${newPosition}px))`;
+        };
+
+        document.addEventListener("DOMContentLoaded", setValue);
+        range.addEventListener('input', setValue);
+
+        const
+            stress_range = document.getElementById('stress_index'),
+            stress_rangeV = document.getElementById('stress_index_display');
+        setStressValue = () => {
+            const
+                newStressValue = Number((stress_range.value - stress_range.min) * 100 / (stress_range.max - stress_range.min)),
+                newStressPosition = 10 - (newStressValue * 0.2);
+            stress_rangeV.innerHTML = `<span>${stress_range.value}</span>`;
+            stress_rangeV.style.left = `calc(${newStressValue}% + (${newStressPosition}px))`;
+        };
+
+        document.addEventListener("DOMContentLoaded", setStressValue);
+        stress_range.addEventListener('input', setStressValue);
+
+        const
+            compliments_range = document.getElementById('compliments_index'),
+            compliments_rangeV = document.getElementById('compliments_index_display');
+        setComplementsValue = () => {
+            const
+                newComplimentsValue = Number((compliments_range.value - compliments_range.min) * 100 / (compliments_range.max - compliments_range.min)),
+                newComplimentsPosition = 10 - (newComplimentsValue * 0.2);
+            compliments_rangeV.innerHTML = `<span>${compliments_range.value}</span>`;
+            compliments_rangeV.style.left = `calc(${newComplimentsValue}% + (${newComplimentsPosition}px))`;
+        };
+
+        document.addEventListener("DOMContentLoaded", setComplementsValue);
+        compliments_range.addEventListener('input', setComplementsValue);
+
+        const
+            finance_range = document.getElementById('finance_index'),
+            finance_rangeV = document.getElementById('finance_index_display');
+        setFinanceValue = () => {
+            const
+                newFinanceValue = Number((finance_range.value - finance_range.min) * 100 / (finance_range.max - finance_range.min)),
+                newFinancePosition = 10 - (newFinanceValue * 0.2);
+            finance_rangeV.innerHTML = `<span>${finance_range.value}</span>`;
+            finance_rangeV.style.left = `calc(${newFinanceValue}% + (${newFinancePosition}px))`;
+        };
+
+        document.addEventListener("DOMContentLoaded", setFinanceValue);
+        finance_range.addEventListener('input', setFinanceValue);
+
+
+        const
+            hobbies_range = document.getElementById('hobbies_index'),
+            hobbies_rangeV = document.getElementById('hobbies_index_display');
+        setHobbyValue = () => {
+            const
+                newHobbyValue = Number((hobbies_range.value - hobbies_range.min) * 100 / (hobbies_range.max - hobbies_range.min)),
+                newHobbyPosition = 10 - (newHobbyValue * 0.2);
+            hobbies_rangeV.innerHTML = `<span>${hobbies_range.value}</span>`;
+            hobbies_rangeV.style.left = `calc(${newHobbyValue}% + (${newHobbyPosition}px))`;
+        };
+
+        document.addEventListener("DOMContentLoaded", setHobbyValue);
+        hobbies_range.addEventListener('input', setHobbyValue);
+
+
+        const
+            social_range = document.getElementById('social_index'),
+            social_rangeV = document.getElementById('social_index_display');
+        setSocialValue = () => {
+            const
+                newSocialValue = Number((social_range.value - social_range.min) * 100 / (social_range.max - social_range.min)),
+                newSocialPosition = 10 - (newSocialValue * 0.2);
+            social_rangeV.innerHTML = `<span>${social_range.value}</span>`;
+            social_rangeV.style.left = `calc(${newSocialValue}% + (${newSocialPosition}px))`;
+        };
+
+        document.addEventListener("DOMContentLoaded", setSocialValue);
+        social_range.addEventListener('input', setSocialValue);
+
+        const
+            academic_range = document.getElementById('academic_index'),
+            academic_rangeV = document.getElementById('academic_index_display');
+        setAcademicValue = () => {
+            const
+                newAcademicValue = Number((academic_range.value - academic_range.min) * 100 / (academic_range.max - academic_range.min)),
+                newAcademicPosition = 10 - (newAcademicValue * 0.2);
+            academic_rangeV.innerHTML = `<span>${academic_range.value}</span>`;
+            academic_rangeV.style.left = `calc(${newAcademicValue}% + (${newAcademicPosition}px))`;
+        };
+
+        document.addEventListener("DOMContentLoaded", setAcademicValue);
+        academic_range.addEventListener('input', setAcademicValue);
+
+        const
+            procrastinate_range = document.getElementById('procrastinate_index'),
+            procrastinate_rangeV = document.getElementById('procrastinate_index_display');
+        setProcrastValue = () => {
+            const
+                newProcrastValue = Number((procrastinate_range.value - procrastinate_range.min) * 100 / (procrastinate_range.max - procrastinate_range.min)),
+                newProcrastPosition = 10 - (newProcrastValue * 0.2);
+            procrastinate_rangeV.innerHTML = `<span>${procrastinate_range.value}</span>`;
+            procrastinate_rangeV.style.left = `calc(${newProcrastValue}% + (${newProcrastPosition}px))`;
+        };
+
+        document.addEventListener("DOMContentLoaded", setProcrastValue);
+        procrastinate_range.addEventListener('input', setProcrastValue);
+
+        const
+            comparison_range = document.getElementById('comparison_index'),
+            comparison_rangeV = document.getElementById('comparison_index_display');
+        setComparisonValue = () => {
+            const
+                newComparisonValue = Number((comparison_range.value - comparison_range.min) * 100 / (comparison_range.max - comparison_range.min)),
+                newComparisonPosition = 10 - (newComparisonValue * 0.2);
+                comparison_rangeV.innerHTML = `<span>${comparison_range.value}</span>`;
+                comparison_rangeV.style.left = `calc(${newComparisonValue}% + (${newComparisonPosition}px))`;
+        };
+
+        document.addEventListener("DOMContentLoaded", setComparisonValue);
+        comparison_range.addEventListener('input', setComparisonValue);
+    </script>
+    {% endblock %}

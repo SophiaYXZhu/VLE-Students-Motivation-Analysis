@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Virtual Learning Environment assessment</title>
+<style>
+    .flex-container {
+        display: flex;
+        flex-wrap: wrap;
+        min-height: 100vh;
+        margin: 10px;
+    }
+
+    .flex-item {
+        min-width: 50%;
+        max-width: 50%;
+
+        min-height: 50%;
+        max-height: 50%;
+    }
+
+    .analysis-style {
+        font-size: 12pt;
+    }
+
+    .parent {
+        margin: auto;
+        display: flex;
+        height: 100%;
+        width: 100%;
+    }
+
+    .child {
+        margin: auto;
+        /* Magic! */
+        max-width: 100%;
+        max-height: 100%;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+{% if result and result.message %}
+<p></p>
+<p></p>
+<p></p>
+<br>
+<br>
+<br>
+<div>
+    <h2>ERROR: {{ result.message}}</h2>
+</div>
+
+{% elif result %}
+
+<div id="app" class="flex-container">
+    <div class="flex-item" style="background-color:white">
+        <div class="analysis-style">
+            <br>
+            <br>
+            <br>
+            <ul>
+                {% for key, value in result.analysis.items() %}
+                <li>
+                    <b>{{key}}</b>
+                    <br>
+                    {{value}}
+                    <p>
+                    <br>
+                    {{result.advice[key]}}
+                </li>
+                <br>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="flex-item" style="background-color:white">
+        <div class="parent">
+            <img class="child" src="radar.png" />
+        </div>
+    </div>
+    <div class="flex-item" style="background-color:white" id="includedContent"> </div>
+
+    <div class="flex-item" style="background-color:white">
+        <br>
+        <h4 class="analysis-style">The three internal indexes:</h4>
+        <ul>
+            <li>
+                <b>Achievement:</b>
+                <br>
+                Achievement index measures your level of contentment which further motivates you in academic studying.
+            </li>
+            <li>
+                <b>Affiliation:</b>
+                <br>
+                Affiliation index measures the strength of your will to blend in or make an impression on an online
+                learning community.
+            </li>
+            <li>
+                <b>Power:</b>
+                <br>
+                Power index measures how much do you want to make an impact of change something in a positive way to the
+                community around you.
+            </li>
+        </ul>
+        <h4 class="analysis-style">The two external indexes:</h4>
+        <ul>
+            <li>
+                <b>Physical Conditions:</b>
+                <br>
+                It is a direct measurement of your physical conditions, which include mainly age and financial
+                conditions.
+            </li>
+            <li>
+                <b>Environment:</b>
+                <br>
+                Environment index measures how the environment contribtes to your self-motivating power, which include
+                your assessment type and your academic scoring.
+            </li>
+        </ul>
+        <b>* The radar chart shows the distribution of your five indexes.</b>
+        <br>
+        <b>* The vector graph shows your reward vector (red), punishment vector (blue), and net physical motivation
+            vector (green).</b>
+
+    </div>
+</div>
+
+
+{% endif %}
+<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+<script>
+    $("#includedContent").load("http://localhost:5000/vectors");
+</script>
+
+{% endblock %}
