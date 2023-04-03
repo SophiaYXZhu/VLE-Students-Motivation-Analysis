@@ -8,4 +8,4 @@ Run ```flask run``` to create local server.
 The model is based on semi-supervised learning embeds three intrinsic indexes and two extrinsic indexes as vectors using a simple 3-layered FNN, evaluating students' performance in VLE and providing graphics via the webapp. We adopt with a cosine similarity loss function designed to find the optimized balance between the indexes.
 
 # Mechanics
-[embed] https://ia601606.us.archive.org/27/items/vleresearch-report-sophia-zhu/VLEResearchReport_SophiaZhu.pdf [/embed]
+See the uploaded paper or https://ia601606.us.archive.org/27/items/vleresearch-report-sophia-zhu/VLEResearchReport_SophiaZhu.pdf for reference.
